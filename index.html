@@ -430,9 +430,9 @@
     let puedeVotarCSU = persona.CSU;
     
     // Si NO vota por rector pero SÍ vota por consejo estudiantil, intercambiamos
-    if (!persona.Rector && persona.CSU) {
-        puedeVotarRector = true;
-        puedeVotarCSU = false;
+    if (persona.Rector && !persona.CSU) {
+        puedeVotarRector = false;
+        puedeVotarCSU =  true;
     }
     
     // Rector
@@ -457,4 +457,5 @@
 </body>
 
 </html>
+
 
