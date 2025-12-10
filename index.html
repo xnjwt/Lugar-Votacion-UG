@@ -423,27 +423,38 @@
         }
 
         function mostrarResultados(persona) {
-            document.getElementById('nombre').textContent = persona.Nombres;
-            
-            // Rector
-            const rectorDiv = document.getElementById('rector');
-            rectorDiv.innerHTML = persona.Rector 
-                ? '<span class="vote-status vote-yes"><i class="fas fa-check-circle"></i> Sí vota</span>'
-                : '<span class="vote-status vote-no"><i class="fas fa-times-circle"></i> No vota</span>';
-            
-            // Consejo Estudiantil (CSU)
-            const csuDiv = document.getElementById('csu');
-            csuDiv.innerHTML = persona.CSU 
-                ? '<span class="vote-status vote-yes"><i class="fas fa-check-circle"></i> Sí vota</span>'
-                : '<span class="vote-status vote-no"><i class="fas fa-times-circle"></i> No vota</span>';
-            
-            // Mesa y Género
-            document.getElementById('mesa').textContent = persona.Mesa;
-            document.getElementById('genero').textContent = persona.Genero.trim();
-            
-            document.getElementById('results').classList.add('show');
-        }
+    document.getElementById('nombre').textContent = persona.Nombres;
+    
+    // Corregir lógica de votación
+    let puedeVotarRector = persona.Rector;
+    let puedeVotarCSU = persona.CSU;
+    
+    // Si NO vota por rector pero SÍ vota por consejo estudiantil, intercambiamos
+    if (!persona.Rector && persona.CSU) {
+        puedeVotarRector = true;
+        puedeVotarCSU = false;
+    }
+    
+    // Rector
+    const rectorDiv = document.getElementById('rector');
+    rectorDiv.innerHTML = puedeVotarRector 
+        ? '<span class="vote-status vote-yes"><i class="fas fa-check-circle"></i> Sí vota</span>'
+        : '<span class="vote-status vote-no"><i class="fas fa-times-circle"></i> No vota</span>';
+    
+    // Consejo Estudiantil (CSU)
+    const csuDiv = document.getElementById('csu');
+    csuDiv.innerHTML = puedeVotarCSU 
+        ? '<span class="vote-status vote-yes"><i class="fas fa-check-circle"></i> Sí vota</span>'
+        : '<span class="vote-status vote-no"><i class="fas fa-times-circle"></i> No vota</span>';
+    
+    // Mesa y Género
+    document.getElementById('mesa').textContent = persona.Mesa;
+    document.getElementById('genero').textContent = persona.Genero.trim();
+    
+    document.getElementById('results').classList.add('show');
+}
     </script>
 </body>
 
 </html>
+
