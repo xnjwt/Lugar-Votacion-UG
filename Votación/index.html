@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busca tu Lugar de Votación - FMF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255,255,255,0.05) 0%, transparent 20%);
+            pointer-events: none;
+        }
+
+        .faculty-icon-img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            animation: pulse 10s infinite;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            animation: slideUp 0.6s ease-out;
+            position: relative;
+            z-index: 1;
+            max-height: 90vh;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .faculty-icon {
+            font-size: 60px;
+            color: #1e3c72;
+            margin-bottom: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        h1 {
+            color: #333;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1e3c72;
+            box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+        }
+
+        .id-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #1e3c72;
+            font-size: 20px;
+        }
+
+        .search-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(30, 60, 114, 0.4);
+        }
+
+        .search-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(30, 60, 114, 0.6);
+        }
+
+        .search-btn:active {
+            transform: translateY(0);
+        }
+
+        .results-container {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .results-container.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .info-row {
+            background: #f8f9ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .info-row:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-icon {
+            font-size: 24px;
+            color: #1e3c72;
+            width: 40px;
+            text-align: center;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .name-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1e3c72;
+            text-transform: capitalize;
+        }
+
+        .vote-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .vote-yes {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .vote-no {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .mesa-genero-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .mesa-numero {
+            font-size: 48px;
+            font-weight: 800;
+            color: #1e3c72;
+            line-height: 1;
+        }
+
+        .mesa-label {
+            font-size: 14px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .genero-info {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            padding: 8px 15px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .not-found {
+            text-align: center;
+            padding: 40px;
+            background: #fff5f5;
+            border-radius: 12px;
+            display: none;
+            animation: shake 0.5s ease;
+        }
+
+        .not-found.show {
+            display: block;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .sad-icon {
+            font-size: 60px;
+            color: #e53e3e;
+            margin-bottom: 20px;
+        }
+
+        .not-found-text {
+            font-size: 18px;
+            color: #e53e3e;
+            font-weight: 600;
+        }
+
+        .double-info-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .double-info-row .info-row {
+            flex: 1;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="cmfIcon.png" class="faculty-icon-img" alt="Logo FMF">
+            <h1>Consulta tu Lugar de Votación</h1>
+        </div>
+
+        <div class="search-box">
+            <input type="text" class="search-input" id="cedulaInput" placeholder="Ingresa tu número de cédula">
+            <i class="fas fa-id-card id-icon"></i>
+        </div>
+
+        <button class="search-btn" onclick="buscarCedula()">
+            <i class="fas fa-search"></i> Buscar
+        </button>
+
+        <div class="results-container" id="results">
+            <div class="info-row">
+                <i class="fas fa-user info-icon"></i>
+                <div class="info-content">
+                    <div class="info-label">Nombre</div>
+                    <div class="info-value name-value" id="nombre"></div>
+                </div>
+            </div>
+
+            <div class="double-info-row">
+                <div class="info-row">
+                    <i class="fas fa-graduation-cap info-icon"></i>
+                    <div class="info-content">
+                        <div class="info-label">Votación Rector</div>
+                        <div class="info-value" id="rector"></div>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <i class="fas fa-users info-icon"></i>
+                    <div class="info-content">
+                        <div class="info-label">Consejo Estudiantil</div>
+                        <div class="info-value" id="csu"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-row mesa-genero-row">
+                <div>
+                    <div class="mesa-label">Mesa</div>
+                    <div class="mesa-numero" id="mesa"></div>
+                    
+                </div>
+                <div class="genero-info" id="genero"></div>
+            </div>
+        </div>
+
+        <div class="not-found" id="notFound">
+            <i class="fas fa-frown sad-icon"></i>
+            <div class="not-found-text">Cédula no encontrada</div>
+            <p style="color: #888; margin-top: 10px;">Verifica el número e inténtalo de nuevo</p>
+        </div>
+    </div>
+
+    <script>
+        let datos = [];
+
+        // Cargar datos del JSON al iniciar
+        fetch('datos.json')
+            .then(response => response.json())
+            .then(data => {
+                datos = data;
+            })
+            .catch(error => {
+                console.error('Error al cargar datos:', error);
+                alert('Error al cargar la base de datos. Por favor, recarga la página.');
+            });
+
+        // Permitir buscar con Enter
+        document.getElementById('cedulaInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                buscarCedula();
+            }
+        });
+
+        function buscarCedula() {
+            const cedula = document.getElementById('cedulaInput').value.trim();
+            
+            if (!cedula) {
+                alert('Por favor ingresa un número de cédula');
+                return;
+            }
+
+            const persona = datos.find(p => p.Cedula === cedula);
+
+            // Ocultar resultados anteriores
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('notFound').classList.remove('show');
+
+            setTimeout(() => {
+                if (persona) {
+                    mostrarResultados(persona);
+                } else {
+                    document.getElementById('notFound').classList.add('show');
+                }
+            }, 300);
+        }
+
+        function mostrarResultados(persona) {
+            document.getElementById('nombre').textContent = persona.Nombres;
+            
+            // Rector
+            const rectorDiv = document.getElementById('rector');
+            rectorDiv.innerHTML = persona.Rector 
+                ? '<span class="vote-status vote-yes"><i class="fas fa-check-circle"></i> Sí vota</span>'
+                : '<span class="vote-status vote-no"><i class="fas fa-times-circle"></i> No vota</span>';
+            
+            // Consejo Estudiantil (CSU)
+            const csuDiv = document.getElementById('csu');
+            csuDiv.innerHTML = persona.CSU 
+                ? '<span class="vote-status vote-yes"><i class="fas fa-check-circle"></i> Sí vota</span>'
+                : '<span class="vote-status vote-no"><i class="fas fa-times-circle"></i> No vota</span>';
+            
+            // Mesa y Género
+            document.getElementById('mesa').textContent = persona.Mesa;
+            document.getElementById('genero').textContent = persona.Genero.trim();
+            
+            document.getElementById('results').classList.add('show');
+        }
+    </script>
+</body>
+</html>
